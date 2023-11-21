@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,20 @@ public class AlbumController {
 
         List<Photo> photos = photoService.getPhotosByAlbumId(albumId);
 
+        List<Map<String, Object>> simplifiedPhotos = new ArrayList<>();
+        for (Photo photo : photos) {
+            Map<String, Object> simplifiedPhoto = new HashMap<>();
+            simplifiedPhoto.put("id", photo.getId());
+            simplifiedPhoto.put("title", photo.getTitle());
+            simplifiedPhoto.put("url", photo.getUrl());
+            simplifiedPhoto.put("thumbnailUrl", photo.getThumbnailUrl());
+            simplifiedPhoto.put("albumId", photo.getAlbum().getId()); // Include only the albumId
+            simplifiedPhotos.add(simplifiedPhoto);
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("album", album);
-        response.put("photos", photos);
+        response.put("photos", simplifiedPhotos);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
